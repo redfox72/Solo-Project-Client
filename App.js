@@ -4,11 +4,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-const AuthContext = React.createContext();
+import AuthContext from './context/AuthContext';
 const Tab = createBottomTabNavigator();
 import * as authReducer from './reducers/signedInReducer';
 import * as authBootstrap from './bootstrap/authBootstrap';
 import * as authMemo from './memo/authMemo';
+import AuthTab from './components/loggedOut/Tab';
+import TabLoggedIn from './components/loggedIn/Tab';
 
 function SplashScreen() {
   return (
@@ -41,41 +43,10 @@ function HomeScreen2() {
 }
 
 function SignInScreen() {
-  const [username, setUsername] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [status, setStatus] = React.useState('');
-
-  const { signIn } = React.useContext(AuthContext);
-
-  return (
-    <View>
-      <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      {status !== '' ? <Text>{status}</Text> : <></>}
-      <Button title="Sign in" onPress={() => signIn({ username, password, setStatus })} />
-    </View>
-  );
+  
 }
 
 const Stack = createStackNavigator();
-
-function TabLoggedIn() {
-  return (
-  <Tab.Navigator>
-    <Tab.Screen name="Home" component={HomeScreen}/>
-    <Tab.Screen name="Home2" component={HomeScreen2}/>
-  </Tab.Navigator>
-  );
-}
 
 export default function App({ navigation }) {
   const [state, dispatch] = React.useReducer(
@@ -97,15 +68,7 @@ export default function App({ navigation }) {
             <Stack.Screen name="Splash" component={SplashScreen} />
           ) : state.userToken == null ? (
             // No token found, user isn't signed in
-            <Stack.Screen
-              name="SignIn"
-              component={SignInScreen}
-              options={{
-                title: 'Sign in',
-                // When logging out, a pop animation feels intuitive
-                animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-              }}
-            />
+            <Stack.Screen name="Log in" component={AuthTab}/>
           ) : (
             // User is signed in
             <Stack.Screen name= "loggedIn" component={TabLoggedIn}/>
